@@ -20,8 +20,12 @@ const Login = () => {
   )
 
   return (
-    <Layout style={apply(C.bgPurple, C.justifyCenter) as ViewStyle}>
-      <Text>Login</Text>
+    <Layout
+      style={apply(C.bgPurple, C.justifyCenter) as ViewStyle}
+      contentStyle={apply(C.itemsCenter, C.justifyCenter) as ViewStyle}>
+      <Text testID="login-text" style={apply(C.font6, C.textWhite)}>
+        Login
+      </Text>
     </Layout>
   )
 }

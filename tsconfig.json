@@ -6,6 +6,7 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "#assets/*": ["assets/*"],
       "#components/*": ["components/*"],
       "#constants": ["helpers/constants"],
       "#contexts/*": ["contexts/*"],

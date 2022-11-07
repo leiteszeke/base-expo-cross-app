@@ -4,6 +4,7 @@ import { ImageSourcePropType, ViewStyle } from 'react-native'
 export type LayoutProps = PropsWithChildren<{
   avoiKeyboard?: boolean
   bg?: ImageSourcePropType
+  contentStyle?: ViewStyle
   headerProps?: HeaderProps
   style?: ViewStyle
 }>

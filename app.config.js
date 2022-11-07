@@ -53,7 +53,7 @@ export default {
       supportsTablet: false,
       bundleIdentifier: 'com.example.baseexpocrossapp',
       splash: {
-        image: './assets/images/splash.png',
+        image: './assets/splash.png',
         resizeMode: 'contain',
         backgroundColor: '#ffffff',
       },
@@ -61,18 +61,18 @@ export default {
     android: {
       versionCode: expoVersion.android,
       adaptiveIcon: {
-        foregroundImage: './assets/images/adaptive-icon.png',
+        foregroundImage: './assets/adaptive-icon.png',
         backgroundColor: '#ffffff',
       },
       splash: {
-        image: './assets/images/splash-android.png',
+        image: './assets/splash-android.png',
         resizeMode: 'contain',
         backgroundColor: '#ffffff',
       },
       package: 'com.example.baseexpocrossapp',
     },
     web: {
-      favicon: './assets/images/favicon.png',
+      favicon: './assets/favicon.png',
     },
     extra: {
       apiUrl: process.env.API_URL,
@@ -91,7 +91,7 @@ export default {
       },
       sentryDsn: process.env.SENTRY_DSN,
     },
-    plugins: ['sentry-expo'],
+    plugins: ['sentry-expo', '@config-plugins/detox'],
     ...restOpts,
   },
 }

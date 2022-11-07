@@ -17,7 +17,14 @@ import { useAndroidBack } from '#hooks/useAndroidBack'
 
 import { LayoutProps } from './Layout.types'
 
-const Layout = ({ avoiKeyboard = false, bg, children, headerProps, style }: LayoutProps) => {
+const Layout = ({
+  avoiKeyboard = false,
+  bg,
+  children,
+  contentStyle,
+  headerProps,
+  style,
+}: LayoutProps) => {
   const insets = useSafeAreaInsets()
   const { goBack } = useNavigation()
 
@@ -65,11 +72,11 @@ const Layout = ({ avoiKeyboard = false, bg, children, headerProps, style }: Layo
         </View>
       )}
       {avoiKeyboard ? (
-        <View style={C.flex}>{children}</View>
+        <View style={apply(C.flex, contentStyle)}>{children}</View>
       ) : (
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={C.flex}>
+          style={apply(C.flex, contentStyle)}>
           {children}
         </KeyboardAvoidingView>
       )}

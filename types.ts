@@ -3,13 +3,17 @@ import { NavigationProp, NavigatorScreenParams } from '@react-navigation/native'
 import { OverridedMixpanel } from 'mixpanel-browser'
 
 import { version } from './package.json'
+import { DeviceType } from 'expo-device'
 
 export type Generic<T = unknown> = Record<string, T>
 
 export type DeviceData = {
   currentVersion: string
+  deviceId: string
+  deviceType: DeviceType
   deviceMeta: {
     brand: string
+    platform: string
     OS: 'ios' | 'android' | 'web' | 'windows' | 'macos'
     modelId: string | null
     modelName: string | null

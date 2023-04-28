@@ -1,29 +1,45 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import create from 'zustand'
-import { devtools, persist } from 'zustand/middleware'
-import createVanilla from 'zustand/vanilla'
+import { create } from 'zustand'
+import { createJSONStorage, devtools, persist } from 'zustand/middleware'
+import { createStore as createVanilla } from 'zustand/vanilla'
 
 import { Platform } from 'react-native'
 
 import { userStore } from './users'
-import { Set, State } from './store.types'
+import { Get, Set, State } from './store.types'
+import Config from '#helpers/config'
+import { AppVersion } from '#types'
+import { genericStore } from './generic'
 
 const Storage = Platform.OS !== 'web' ? AsyncStorage : localStorage
 
-const storeObject = (set: Set<State>): State => ({
-  ...userStore(set),
+const storeConfig = {
+  name: `${Config.sessionKey}@${AppVersion}`,
+  storage: createJSONStorage<State>(() => Storage),
+}
+
+const storeObject = (set: Set<State>, get: Get<State>): State => ({
+  ...genericStore(set, get),
+  ...userStore(set, get),
 })
+
+const clearOldKeys = () => {
+  const envKey = Config.sessionKey
+  const currentKey = `${Config.sessionKey}@${AppVersion}`
+  const keys = Object.keys(localStorage).filter((key) => key.includes(envKey) && key !== currentKey)
+
+  keys.forEach((key) => {
+    localStorage.removeItem(key)
+  })
+}
 
 export const useAppStore = create<State, [['zustand/devtools', never], ['zustand/persist', State]]>(
   devtools(
     persist(
-      (set) => ({
-        ...storeObject(set),
+      (set, get) => ({
+        ...storeObject(set, get),
       }),
-      {
-        name: 'BaseExpoCrossApp',
-        getStorage: () => Storage,
-      },
+      storeConfig,
     ),
   ),
 )
@@ -34,13 +50,14 @@ export const AppStore = createVanilla<
 >(
   devtools(
     persist(
-      (set) => ({
-        ...storeObject(set),
+      (set, get) => ({
+        ...storeObject(set, get),
       }),
-      {
-        name: 'BaseExpoCrossApp',
-        getStorage: () => Storage,
-      },
+      storeConfig,
     ),
   ),
 )
+
+if (Platform.OS === 'web') {
+  clearOldKeys()
+}

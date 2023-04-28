@@ -1,24 +1,41 @@
-import * as Device from "expo-device";
+import * as Device from 'expo-device'
 
-import { Platform, Dimensions } from "react-native";
+import { Platform, Dimensions } from 'react-native'
+import DeviceInfo from 'react-native-device-info'
 
-import { AppVersion, DeviceData } from "#types";
+import { AppStore } from '#store'
+import { AppVersion, DeviceData } from '#types'
 
-export const getDeviceData = (): DeviceData => {
-  const { height: screenHeight, width: screenWidth } = Dimensions.get("screen");
-  const { height: windowHeight, width: windowWidth } = Dimensions.get("window");
+export const getDeviceUUID = () => DeviceInfo.getUniqueIdSync()
+
+export const getDeviceData = async (): Promise<DeviceData> => {
+  const { height: screenHeight, width: screenWidth } = Dimensions.get('screen')
+  const { height: windowHeight, width: windowWidth } = Dimensions.get('window')
+
+  const deviceType = await Device.getDeviceTypeAsync()
 
   return {
     currentVersion: AppVersion,
+    deviceId: getDeviceUUID(),
+    deviceType,
     deviceMeta: {
-      brand: Device?.brand ?? "",
+      brand: DeviceInfo.getBrand(),
+      platform: DeviceInfo.getDeviceId(),
+      modelId: DeviceInfo.getModel(),
+      modelName: DeviceInfo.getModel(),
       OS: Platform.OS,
-      modelName: Device?.modelName,
-      modelId: Device?.modelId,
       screenHeight,
       screenWidth,
       windowHeight,
       windowWidth,
     },
-  };
-};
+  }
+}
+
+export const isPhone = AppStore.getState().isPhone()
+
+export const isTablet = AppStore.getState().isTablet()
+
+export const isDesktop = AppStore.getState().deviceType === Device.DeviceType.DESKTOP
+
+export const isWeb = Platform.OS === 'web'

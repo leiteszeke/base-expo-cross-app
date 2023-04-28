@@ -4,12 +4,12 @@ import { MutableRefObject } from 'react'
 
 import Config from '#helpers/config'
 import { getDeviceData } from '#helpers/device'
-import { AppStore } from '#store'
 import { AppVersion, EventKey, Generic, MixPanel, User } from '#types'
+import { AppStore } from '#store'
 
 type UserData = Pick<User, 'id' | 'name' | 'email' | 'lastname'>
 
-const getUserData = (user?: User | null) => {
+const getUserData = async (user?: User | null) => {
   let innerUser = user
 
   if (!user) {
@@ -17,7 +17,7 @@ const getUserData = (user?: User | null) => {
   }
 
   const userProps: Partial<UserData> = {}
-  const deviceData = getDeviceData()
+  const deviceData = await getDeviceData()
 
   if (innerUser) {
     userProps.id = innerUser.id
@@ -39,8 +39,8 @@ const getUserData = (user?: User | null) => {
   }
 }
 
-export const initAnalytics = (user?: User, _?: MutableRefObject<MixPanel>) => {
-  const { userProps, extraProps } = getUserData(user)
+export const initAnalytics = async (user?: User, _?: MutableRefObject<MixPanel>) => {
+  const { userProps, extraProps } = await getUserData(user)
 
   if (Config.useMixpanelAnalytics && Config.mixpanelToken) {
     const peopleConfig = {
@@ -51,14 +51,14 @@ export const initAnalytics = (user?: User, _?: MutableRefObject<MixPanel>) => {
     Mixpanel?.init(Config.mixpanelToken)
 
     if (peopleConfig.id) {
-      Mixpanel?.identify(peopleConfig.id)
+      Mixpanel?.identify(peopleConfig.id?.toString())
     }
 
     Mixpanel?.register(peopleConfig)
   }
 }
 
-export const logEvent = (eventName: string, eventData: Generic) => {
+export const logEvent = (eventName: string, eventData?: Generic) => {
   mixpanelEvent(eventName, eventData)
 }
 
@@ -66,16 +66,16 @@ export const logScreenView = async (screenName: string) => {
   mixpanelEvent(EventKey.ScreenView, { screenName })
 }
 
-export const mixpanelEvent = (eventName: string, props?: Generic) => {
+export const mixpanelEvent = async (eventName: string, props?: Generic) => {
   if (Config.useMixpanelAnalytics) {
-    initAnalytics()
+    await initAnalytics()
     Mixpanel?.track(eventName, props)
   }
 }
 
-export const clearMixpanel = (_: MutableRefObject<OverridedMixpanel>) => {
+export const clearMixpanel = async (_: MutableRefObject<OverridedMixpanel>) => {
   if (Config.useMixpanelAnalytics) {
-    initAnalytics()
+    await initAnalytics()
     Mixpanel?.reset()
   }
 }

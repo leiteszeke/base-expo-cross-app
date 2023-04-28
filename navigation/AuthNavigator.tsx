@@ -1,7 +1,7 @@
 import { ApolloProvider } from '@apollo/client'
 import { useRoute } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import GraphQLClient from 'client'
+import GraphQLClient from '#services/graphql'
 
 import React from 'react'
 

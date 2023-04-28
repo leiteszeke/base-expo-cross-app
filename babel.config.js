@@ -17,7 +17,7 @@ module.exports = function (api) {
             '#images': './assets/images',
             '#navigation': './navigation',
             '#screens': './screens',
-            '#services': './services/index',
+            '#services': './services',
             '#store': './store/index',
             '#types': './types.ts',
           },

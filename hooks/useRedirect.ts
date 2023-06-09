@@ -1,31 +1,30 @@
-import { useNavigation } from '@react-navigation/native'
+import { NavigationProp, useNavigation } from '@react-navigation/native'
 
-import { Platform } from 'react-native'
+import { RootStackParamList, ScreensParamList } from '#types'
+
+import { useDevice } from './useDevice'
 
 const RootStack = 'Root'
 
 export const useRedirect = () => {
-  const { navigate } = useNavigation<any>()
+  const { isWeb } = useDevice()
+  const { navigate } = useNavigation<NavigationProp<RootStackParamList>>()
 
-  if (Platform.OS === 'web') {
+  if (isWeb) {
     const urlSearchParams = new URLSearchParams(window.location.search)
     const params = Object.fromEntries(urlSearchParams.entries())
 
-    const screen = params.sc
-    const stack = params.st
+    const { sc: screen, ...restParams } = params
 
     if (screen) {
-      const completeStack = `${stack}Stack`
-
-      if (stack) {
-        navigate(RootStack, { screen: completeStack, params: { screen } })
-      } else if (screen === 'Home') {
-        navigate(RootStack, { screen })
-      } else {
-        navigate(screen)
-      }
+      navigate(RootStack, {
+        screen: screen as keyof ScreensParamList,
+        params: restParams as any,
+      })
     }
   }
+
+  return null
 }
 
 export default useRedirect

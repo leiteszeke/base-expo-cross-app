@@ -1,4 +1,4 @@
-import { ClientToServerEvents, ServerToClientEvents } from '#services/socket'
+import { ClientToServerEvents, ServerToClientEvents } from 'services/socket'
 import { Socket } from 'socket.io-client'
 
 import { useContext } from 'react'

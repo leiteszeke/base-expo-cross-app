@@ -1,18 +1,18 @@
-import { NavigationContainer, useRoute } from '@react-navigation/native'
+import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
-import React, { useRef, useState } from 'react'
-import { Platform } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { logScreenView } from '#helpers/analytics'
-import Policy from '#screens/Policy'
-import { useAppStore } from '#store'
+import { isWeb } from '#helpers/device'
+import MyEvents from '#helpers/myEvents'
+import { useDevice } from '#hooks/useDevice'
+import { RootStackParamList } from '#types'
 
-import { RootStackParamList } from '../types'
-import AuthNavigator from './AuthNavigator'
 import LinkingConfiguration from './LinkingConfiguration'
+import MobileNavigator from './Mobile'
 import { navigationRef } from './Navigator'
-import AppNavigator from './AppNavigator'
+import WebNavigator from './Web'
 
 type Options = {
   title: string
@@ -21,17 +21,22 @@ type Options = {
 type Route = {
   name: string
   params?: {
-    id: string
+    id?: string
+    name?: string
   }
 }
 
-export const parseTitle = (title: string, params?: Route['params']) => {
+const parseTitle = (title: string, params?: Route['params']) => {
   if (!title) {
     return ''
   }
 
-  if (title.includes(':id') && params) {
+  if (title.includes(':id') && params?.id) {
     return title.replace(':id', `#${params.id}`)
+  }
+
+  if (title.includes(':name') && params?.name) {
+    return title.replace(':name', params.name)
   }
 
   return title
@@ -39,12 +44,31 @@ export const parseTitle = (title: string, params?: Route['params']) => {
 
 export default function Navigation() {
   const routeNameRef = useRef<string>()
-  const [documentTitle, setDocumentTitle] = useState<string>('')
+  const [documentTitle, setDocumentTitle] = useState<string>('Daruma')
+  const { isDesktop } = useDevice()
+
+  useEffect(() => {
+    const setTitle = (event: Event) => {
+      const e = event as CustomEvent<{ name: string }>
+
+      setDocumentTitle(parseTitle(documentTitle, e.detail))
+    }
+
+    if (isDesktop) {
+      MyEvents.addEventListener('setTitle', setTitle)
+
+      return () => {
+        MyEvents.removeEventListener('setTitle', setTitle)
+      }
+    }
+  }, [documentTitle])
 
   return (
     <NavigationContainer
       ref={navigationRef}
-      documentTitle={{ formatter: () => documentTitle }}
+      documentTitle={{
+        formatter: () => documentTitle,
+      }}
       linking={LinkingConfiguration}
       onReady={() => {
         if (navigationRef.current) {
@@ -88,22 +112,13 @@ export default function Navigation() {
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
 function RootNavigator() {
-  const { user } = useAppStore()
-  let params = {}
-
-  if (Platform.OS === 'web') {
-    const urlSearchParams = new URLSearchParams(window.location.search)
-    params = Object.fromEntries(urlSearchParams.entries())
-  }
-
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {user ? (
-        <Stack.Screen name="App" component={AppNavigator} initialParams={params} />
-      ) : (
-        <Stack.Screen name="Auth" component={AuthNavigator} initialParams={params} />
-      )}
-      <Stack.Screen name="Policy" component={Policy} />
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Root"
+        component={isWeb ? WebNavigator : MobileNavigator}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   )
 }

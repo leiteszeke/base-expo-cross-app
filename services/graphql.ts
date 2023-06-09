@@ -5,7 +5,9 @@ import Config from '#helpers/config'
 import { AppStore } from '#store'
 import { UserWithToken } from '#types'
 
-const link = new HttpLink({ uri: `${Config.apiUrl}/graphql` })
+const link = new HttpLink({
+  uri: `${Config.graphQLUrl}/graphql`,
+})
 
 const authLink = setContext((_, { headers }) => {
   const { user } = AppStore.getState()
@@ -21,7 +23,9 @@ const authLink = setContext((_, { headers }) => {
 // Initialize Apollo Client
 export const GraphQLClient = new ApolloClient({
   link: authLink.concat(link),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    addTypename: false,
+  }),
 })
 
 const authLinkWithUser = (user: UserWithToken | null) =>

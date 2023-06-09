@@ -1,23 +1,16 @@
-import { extend } from 'consistencss'
-import * as SplashScreen from 'expo-splash-screen'
+import C, { apply, extend } from 'consistencss'
+import { StatusBar } from 'expo-status-bar'
+import { NativeBaseProvider } from 'native-base'
 
-import React from 'react'
-import { LogBox } from 'react-native'
+import { useEffect } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
-import { enableFreeze, enableScreens } from 'react-native-screens'
 
 import AnalyticsProvider from '#contexts/Analytics'
-import Config from '#helpers/config'
-import { getAppVersion } from '#helpers/database'
-import { initSentry } from '#helpers/reporting'
-import { Env } from '#types'
+import { getDeviceData } from '#helpers/device'
+import { useAppStore } from '#store'
 
 import useCachedResources from './hooks/useCachedResources'
 import Navigation from './navigation'
-
-enableScreens()
-enableFreeze(true)
-initSentry()
 
 extend({
   sizing: {
@@ -26,45 +19,48 @@ extend({
     triple: 3,
     dozen: 10,
     third: '33%',
+    fullPlus: '100.5%',
   },
-  colors: {
-    purple: '#4A0D2C',
-    whiteWithOpacity: 'rgba(255, 255, 255, 0.5)',
+  components: {
+    Text: apply({ fontFamily: 'Poppins_400Regular' }, C.textBlack, C.font4, C.line5),
+  },
+  classes: {
+    none: apply({ display: 'none' }),
   },
   fonts: {
-    bold: 'QatarBold',
-    heavy: 'QatarHeavy',
-    medium: 'QatarMedium',
-    ArabicBold: 'QatarArabicBold',
-    ArabicHeavy: 'QatarArabicHeavy',
-    ArabicMedium: 'QatarArabicMedium',
+    light: 'Poppins_300Light',
+    regular: 'Poppins_400Regular',
+    semibold: 'Poppins_600SemiBold',
+    bold: 'Poppins_700Bold',
   },
 })
 
-if (Config.env === Env.Production) {
-  LogBox.ignoreAllLogs()
-
-  console.log = () => {}
-  console.warn = () => {}
-  console.error = () => {}
-}
-
-getAppVersion()
-
 export default function App() {
-  SplashScreen.preventAutoHideAsync()
-
   const isLoadingComplete = useCachedResources()
+  const { setDeviceType } = useAppStore()
+
+  const fetchDeviceType = async () => {
+    const deviceData = await getDeviceData()
+
+    setDeviceType(deviceData.deviceType)
+  }
+
+  useEffect(() => {
+    fetchDeviceType()
+  }, [])
 
   if (!isLoadingComplete) {
     return null
   }
 
   return (
-    <SafeAreaProvider>
-      <AnalyticsProvider>
-        <Navigation />
-      </AnalyticsProvider>
-    </SafeAreaProvider>
+    <NativeBaseProvider>
+      <SafeAreaProvider>
+        <AnalyticsProvider>
+          <Navigation />
+          <StatusBar />
+        </AnalyticsProvider>
+      </SafeAreaProvider>
+    </NativeBaseProvider>
   )
 }

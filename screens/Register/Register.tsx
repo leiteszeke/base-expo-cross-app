@@ -6,10 +6,10 @@ import { ViewStyle, Text } from 'react-native'
 
 import Layout from '#components/Layout'
 import { logEvent } from '#helpers/analytics'
-import { AuthStackParamList } from '#types'
+import { ScreensParamList } from '#types'
 
 const Register = () => {
-  const { params } = useRoute<RouteProp<AuthStackParamList, 'Register'>>()
+  const { params } = useRoute<RouteProp<ScreensParamList, 'Register'>>()
 
   useFocusEffect(
     useCallback(() => {

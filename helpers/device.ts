@@ -20,10 +20,8 @@ export const getDeviceData = async (): Promise<DeviceData> => {
     deviceType,
     deviceMeta: {
       brand: DeviceInfo.getBrand(),
-      platform: DeviceInfo.getDeviceId(),
-      modelId: DeviceInfo.getModel(),
-      modelName: DeviceInfo.getModel(),
       OS: Platform.OS,
+      platform: DeviceInfo.getDeviceId(),
       screenHeight,
       screenWidth,
       windowHeight,

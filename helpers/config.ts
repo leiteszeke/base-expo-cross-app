@@ -27,6 +27,7 @@ type FirebaseConfig = {
 type EnvConfig = {
   env: Env
   apiUrl: string
+  graphQLUrl: string
   wsUrl: string
 
   sessionKey: string
@@ -41,6 +42,7 @@ type EnvConfig = {
 const Config: EnvConfig = {
   env: envValues.env,
   apiUrl: envValues.apiUrl,
+  graphQLUrl: envValues.graphQLUrl,
   wsUrl: envValues.wsUrl,
 
   sessionKey: envValues.sessionKey,

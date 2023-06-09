@@ -6,10 +6,10 @@ import { ViewStyle, Text, View, TextInput, TouchableOpacity } from 'react-native
 
 import Layout from '#components/Layout'
 import { logEvent } from '#helpers/analytics'
-import { AuthStackParamList } from '#types'
+import { ScreensParamList } from '#types'
 
 const Login = () => {
-  const { params } = useRoute<RouteProp<AuthStackParamList, 'Login'>>()
+  const { params } = useRoute<RouteProp<ScreensParamList, 'Login'>>()
 
   const [username, setUsername] = useState<string>('')
   const [password, setPassword] = useState<string>('')

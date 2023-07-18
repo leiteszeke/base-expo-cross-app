@@ -4,6 +4,7 @@ describe('Testing Login Screen', () => {
   })
 
   it('should show login text', () => {
-    cy.get('[data-testid=login-text]').contains('Login')
+    cy.visit('http://localhost:19006')
+    cy.get('[data-testid="login-text"]').contains('Login')
   })
 })

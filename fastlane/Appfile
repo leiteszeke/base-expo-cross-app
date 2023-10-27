@@ -1,0 +1,5 @@
+apple_id "john.doe@example.com"
+team_id "MYTEAM1D"
+itc_team_id "ITC_MYTEAM1D"
+
+package_name("com.leiteszeke.example")

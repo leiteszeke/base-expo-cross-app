@@ -18,6 +18,15 @@ cypress/downloads/*
 cypress/screenshots/*
 cypress/videos/*
 
-# Native folders
-ios/
-android/
+# Fastlane
+fastlane/.env
+fastlane/README.md
+fastlane/report.xml
+fastlane/AuthKey.json
+
+# Build
+*.dSYM.zip
+*.ipa
+
+ios
+android

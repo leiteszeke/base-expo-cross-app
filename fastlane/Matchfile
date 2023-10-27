@@ -1,0 +1,8 @@
+storage_mode("git")
+
+git_url("git@github.com:john-doe/keystore.example.app.git")
+
+type("development")
+
+app_identifier(["com.leiteszeke.example"])
+username("john.doe@example.com")

@@ -1,4 +1,4 @@
-import { Event, CaptureContext } from '@sentry/types'
+import { CaptureContext } from '@sentry/types'
 import * as Sentry from 'sentry-expo'
 
 import { Platform } from 'react-native'
@@ -20,7 +20,6 @@ export const initSentry = async () => {
       environment: Config.env,
       enableInExpoDevelopment: true,
       release: deviceData.currentVersion,
-      enableOutOfMemoryTracking: false,
     })
   }
 }
@@ -43,6 +42,7 @@ export const initErrorReporting = async (user: User) => {
 }
 
 export const captureException = (exception: unknown, context?: CaptureContext) => {
+  // @ts-expect-error Types collision between Browser and Native
   RNSentry.captureException(exception, context)
 }
 
@@ -51,9 +51,10 @@ export const errorHandler = (_: Error, stackTrace: string) => {
 }
 
 export const captureMessage = (message: string, context?: CaptureContext) => {
+  // @ts-expect-error Types collision between Browser and Native
   RNSentry.captureMessage(message, context)
 }
 
-export const captureEvent = (event: Event) => {
+export const captureEvent = (event: Sentry.Browser.Event) => {
   RNSentry.captureEvent(event)
 }

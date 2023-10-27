@@ -72,6 +72,10 @@ export type RootNativeStackScreenProps = CompositeScreenProps<
 
 export type Generic<T = unknown> = Record<string, T>
 
+export type MyEvent = {
+  detail: string
+}
+
 export const AppVersion = packageJson.version
 
 export type DeviceData = {

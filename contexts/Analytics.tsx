@@ -8,13 +8,12 @@ import React, {
   useEffect,
   useRef,
 } from 'react'
-import { Platform } from 'react-native'
-import { EventRegister } from 'react-native-event-listeners'
 
 import { clearMixpanel, initAnalytics, mixpanelEvent } from '#helpers/analytics'
 import Config from '#helpers/config'
-import { AppStore } from '#store'
-import { EventKey, LogEvent, MixPanel } from '#types'
+import MyEvents from '#helpers/myEvents'
+import { useAppStore } from '#store'
+import { EventKey, LogEvent, MixPanel, User } from '#types'
 
 type AnalyticsContextProps = {
   mixpanel: React.MutableRefObject<MixPanel>
@@ -22,49 +21,53 @@ type AnalyticsContextProps = {
 
 export const AnalyticsContext = createContext<Partial<AnalyticsContextProps>>({})
 
+const AnonymousUser = {
+  name: 'John',
+  lastname: 'Doe',
+  email: 'john.doe@example.com',
+  token: '',
+}
+
 export const AnalyticsProvider = ({ children }: PropsWithChildren<{}>) => {
   const mixpanelRef = useRef<MixPanel>()
+  const { user } = useAppStore()
 
   const init = useCallback(async () => {
     if (Config.useMixpanelAnalytics && Config.mixpanelToken) {
-      const { user } = AppStore.getState()
-
-      if (user?.id) {
+      if (user) {
         initAnalytics(user, mixpanelRef as MutableRefObject<MixPanel>)
+      } else {
+        initAnalytics(AnonymousUser as unknown as User, mixpanelRef as MutableRefObject<MixPanel>)
       }
     }
-  }, [])
+  }, [user])
 
   useEffect(() => {
     init()
 
-    if (Platform.OS !== 'web') {
-      EventRegister.addEventListener(EventKey.ScreenView, (screenName: string) => {
-        mixpanelEvent(mixpanelRef as MutableRefObject<ExpoMixpanelAnalytics>, EventKey.ScreenView, {
-          screenName,
-        })
+    MyEvents.addEventListener(EventKey.ScreenView, (screenName: string) => {
+      mixpanelEvent(mixpanelRef as MutableRefObject<ExpoMixpanelAnalytics>, EventKey.ScreenView, {
+        screenName,
       })
+    })
 
-      EventRegister.addEventListener(EventKey.LogEvent, ({ eventName, eventData }: LogEvent) => {
-        mixpanelEvent(mixpanelRef as MutableRefObject<ExpoMixpanelAnalytics>, eventName, eventData)
-      })
+    MyEvents.addEventListener(EventKey.LogEvent, ({ eventName, eventData }: LogEvent) =>
+      mixpanelEvent(mixpanelRef as MutableRefObject<ExpoMixpanelAnalytics>, eventName, eventData),
+    )
 
-      EventRegister.addEventListener(EventKey.Logout, () => {
-        clearMixpanel(mixpanelRef as MutableRefObject<ExpoMixpanelAnalytics>)
-      })
-    }
+    MyEvents.addEventListener(EventKey.Logout, () => {
+      clearMixpanel(mixpanelRef as MutableRefObject<ExpoMixpanelAnalytics>)
+    })
 
     return () => {
       clearMixpanel(mixpanelRef as MutableRefObject<ExpoMixpanelAnalytics>)
-      EventRegister.removeAllListeners()
+      MyEvents.removeAllListeners()
     }
   }, [init])
 
   return (
     <AnalyticsContext.Provider
-      value={{
-        mixpanel: mixpanelRef as MutableRefObject<ExpoMixpanelAnalytics>,
-      }}>
+      value={{ mixpanel: mixpanelRef as MutableRefObject<ExpoMixpanelAnalytics> }}>
       {children}
     </AnalyticsContext.Provider>
   )

@@ -4,20 +4,44 @@
   },
   "build": {
     "development": {
-      "distribution": "internal",
-      "android": {
-        "gradleCommand": ":app:assembleDebug"
-      },
-      "ios": {
-        "buildConfiguration": "Debug"
-      }
-    },
-    "preview": {
+      "developmentClient": true,
       "distribution": "internal"
     },
-    "production": {}
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_APP_NAME": "Example App QA",
+        "EXPO_PUBLIC_BUNDLE_IDENTIFIER": "com.leiteszeke.example.qa",
+        "EXPO_PUBLIC_API_URL": "https://api.example.leites.dev",
+        "EXPO_PUBLIC_WS_URL": "https://ws.example.leites.dev",
+        "EXPO_PUBLIC_USE_MIXPANEL_ANALYTICS": "true",
+        "EXPO_PUBLIC_MIXPANEL_TOKEN": "",
+        "EXPO_PUBLIC_SESSION_KEY": "ExampleAppQA",
+        "EXPO_PUBLIC_SITE_ENV": "qa",
+        "EXPO_PUBLIC_SENTRY_DSN": ""
+      }
+    },
+    "production": {
+      "env": {
+        "EXPO_PUBLIC_APP_NAME": "Example App POS",
+        "EXPO_PUBLIC_APP_ENV": "production",
+        "EXPO_PUBLIC_API_URL": "https://api.example.leites.dev",
+        "EXPO_PUBLIC_WS_URL": "https://ws.example.leites.dev",
+        "EXPO_PUBLIC_USE_MIXPANEL_ANALYTICS": "true",
+        "EXPO_PUBLIC_MIXPANEL_TOKEN": "",
+        "EXPO_PUBLIC_SESSION_KEY": "ExampleApp",
+        "EXPO_PUBLIC_SITE_ENV": "production",
+        "EXPO_PUBLIC_SENTRY_DSN": ""
+      }
+    }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "app@example.com",
+        "ascAppId": "APPID",
+        "appleTeamId": "APPLETEAMID"
+      }
+    }
   }
 }

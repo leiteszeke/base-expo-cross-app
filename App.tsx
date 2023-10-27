@@ -1,9 +1,10 @@
-import C, { apply, extend } from 'consistencss'
+import { apply, extend } from 'consistencss'
 import { StatusBar } from 'expo-status-bar'
-import { NativeBaseProvider } from 'native-base'
 
 import { useEffect } from 'react'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { GluestackUIProvider } from '@gluestack-ui/themed'
+import { config } from '@gluestack-ui/config'
 
 import AnalyticsProvider from '#contexts/Analytics'
 import { getDeviceData } from '#helpers/device'
@@ -20,9 +21,6 @@ extend({
     dozen: 10,
     third: '33%',
     fullPlus: '100.5%',
-  },
-  components: {
-    Text: apply({ fontFamily: 'Poppins_400Regular' }, C.textBlack, C.font4, C.line5),
   },
   classes: {
     none: apply({ display: 'none' }),
@@ -54,13 +52,13 @@ export default function App() {
   }
 
   return (
-    <NativeBaseProvider>
+    <GluestackUIProvider config={config}>
       <SafeAreaProvider>
         <AnalyticsProvider>
           <Navigation />
           <StatusBar />
         </AnalyticsProvider>
       </SafeAreaProvider>
-    </NativeBaseProvider>
+    </GluestackUIProvider>
   )
 }

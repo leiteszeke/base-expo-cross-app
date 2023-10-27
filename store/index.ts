@@ -19,6 +19,11 @@ export const genericInitialState = {
   deviceType: DeviceType.DESKTOP,
 }
 
+export const initialState = {
+  ...genericInitialState,
+  ...usersInitialState,
+}
+
 export const genericState = (set: Set<GenericState>, get: Get<GenericState>): GenericState => ({
   ...genericInitialState,
 
@@ -31,8 +36,7 @@ export const genericState = (set: Set<GenericState>, get: Get<GenericState>): Ge
   resetStore: () =>
     set((state) => ({
       ...state,
-      ...genericInitialState,
-      ...usersInitialState,
+      ...initialState,
     })),
 })
 

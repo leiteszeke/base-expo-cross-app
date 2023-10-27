@@ -17,3 +17,7 @@ web-build/
 cypress/downloads/*
 cypress/screenshots/*
 cypress/videos/*
+
+# Native folders
+ios/
+android/

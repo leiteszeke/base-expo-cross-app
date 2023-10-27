@@ -1,20 +1,44 @@
 import { ApolloProvider } from '@apollo/client'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
-import React, { useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 
 import Login from '#screens/Login'
 import Home from '#screens/Home'
 import { newGraphQLClient } from '#services/graphql'
 import { useAppStore } from '#store'
-import { RootNativeStackParamList } from '#types'
+import { MyEvent, RootNativeStackParamList } from '#types'
+import { useFocusEffect } from '@react-navigation/native'
+import MyEvents from '#helpers/myEvents'
 
 const Stack = createNativeStackNavigator<RootNativeStackParamList>()
 
 function MobileNavigator() {
-  const { user } = useAppStore()
+  const { user, setUser } = useAppStore()
 
   const GraphQLClient = useMemo(() => newGraphQLClient(user), [user])
+
+  const refreshUserToken = useCallback(
+    (event: MyEvent) => {
+      if (user) {
+        setUser({
+          ...user,
+          accessToken: event.detail,
+        })
+      }
+    },
+    [user],
+  )
+
+  useFocusEffect(
+    useCallback(() => {
+      MyEvents.addEventListener('refreshToken', refreshUserToken)
+
+      return () => {
+        MyEvents.removeEventListener('refreshToken', refreshUserToken)
+      }
+    }, []),
+  )
 
   if (!user) {
     return (

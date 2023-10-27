@@ -4,8 +4,8 @@ import { MutableRefObject } from 'react'
 
 import Config from '#helpers/config'
 import { getDeviceData } from '#helpers/device'
-import { AppVersion, EventKey, Generic, MixPanel, User } from '#types'
 import { AppStore } from '#store'
+import { AppVersion, EventKey, Generic, MixPanel, User } from '#types'
 
 type UserData = Pick<User, 'id' | 'name' | 'email' | 'lastname'>
 

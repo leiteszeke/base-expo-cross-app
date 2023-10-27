@@ -3,8 +3,10 @@ import { ExpoConfig } from 'expo/config'
 
 import { version, expoVersion } from './package.json'
 
-const NODE_ENV = process.env.NODE_ENV
-const APP_ENV = process.env.APP_ENV
+const NODE_ENV = process.env.EXPO_PUBLIC_NODE_ENV
+const APP_ENV = process.env.EXPO_PUBLIC_APP_ENV
+const BUNDLE_IDENTIFIER = process.env.EXPO_PUBLIC_BUNDLE_IDENTIFIER ?? 'com.leiteszeke.example'
+const APP_NAME = process.env.EXPO_PUBLIC_APP_NAME ?? 'Example App'
 let envFile
 
 if (APP_ENV) {
@@ -30,8 +32,8 @@ if (NODE_ENV === 'production' || APP_ENV === 'production') {
 }
 
 const config: ExpoConfig = {
-  name: 'Base Expo Cross App',
-  slug: 'baseexpocrossapp',
+  name: APP_NAME,
+  slug: 'exampleapp',
   version,
   orientation: 'portrait',
   icon: './assets/icon.png',
@@ -41,52 +43,58 @@ const config: ExpoConfig = {
     resizeMode: 'contain',
     backgroundColor: '#ffffff',
   },
-  scheme: 'baseexpocrossapp',
+  scheme: 'exampleapp',
   assetBundlePatterns: ['**/*'],
+  updates: {
+    fallbackToCacheTimeout: 0,
+  },
   ios: {
     buildNumber: expoVersion.ios.toString(),
-    supportsTablet: false,
-    bundleIdentifier: 'com.example.baseexpocrossapp',
+    bundleIdentifier: BUNDLE_IDENTIFIER,
+    icon: './assets/icon.png',
     splash: {
       image: './assets/splash.png',
       resizeMode: 'contain',
       backgroundColor: '#ffffff',
     },
+    supportsTablet: false,
   },
   android: {
-    versionCode: expoVersion.android,
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#ffffff',
     },
+    icon: './assets/icon.png',
+    package: BUNDLE_IDENTIFIER,
     splash: {
+      backgroundColor: '#ffffff',
       image: './assets/splash-android.png',
       resizeMode: 'contain',
-      backgroundColor: '#ffffff',
     },
-    package: 'com.example.baseexpocrossapp',
+    versionCode: expoVersion.android,
   },
   web: {
     favicon: './assets/favicon.png',
+    publicPath: './assets/images',
   },
   extra: {
-    apiUrl: process.env.API_URL,
-    wsUrl: process.env.WS_URL,
-    env: process.env.ENV,
-    sessionKey: process.env.SESSION_KEY,
-    useMixpanelAnalytics: process.env.USE_MIXPANEL_ANALYTICS,
-    mixpanelToken: process.env.MIXPANEL_TOKEN,
+    apiUrl: process.env.EXPO_PUBLIC_API_URL,
+    wsUrl: process.env.EXPO_PUBLIC_WS_URL,
+    env: process.env.EXPO_PUBLIC_SITE_ENV,
+    sessionKey: process.env.EXPO_PUBLIC_SESSION_KEY,
+    useMixpanelAnalytics: process.env.EXPO_PUBLIC_USE_MIXPANEL_ANALYTICS,
+    mixpanelToken: process.env.EXPO_PUBLIC_MIXPANEL_TOKEN,
     firebaseConfig: {
-      apiKey: process.env.FIREBASE_API_KEY,
-      authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-      databaseUrl: process.env.FIREBASE_DATABASE_URL,
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-      messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-      appId: process.env.FIREBASE_APP_ID,
-      measurementId: process.env.FIREBASE_MEASUREMENT_ID,
+      apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+      authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+      databaseUrl: process.env.EXPO_PUBLIC_FIREBASE_DATABASE_URL,
+      projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+      storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+      appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+      measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID,
     },
-    sentryDsn: process.env.SENTRY_DSN,
+    sentryDsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
   },
   plugins: ['sentry-expo', '@config-plugins/detox'],
   ...restOpts,

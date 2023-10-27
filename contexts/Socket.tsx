@@ -1,4 +1,4 @@
-import newSocketClient, { ClientToServerEvents, ServerToClientEvents } from '#services/socket'
+import newSocketClient, { ClientToServerEvents, ServerToClientEvents } from 'services/socket'
 import { Socket } from 'socket.io-client'
 
 import { createContext, PropsWithChildren, useEffect, useState } from 'react'

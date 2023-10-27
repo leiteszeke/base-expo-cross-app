@@ -1,0 +1,230 @@
+# DEV
+FIREBASE_ANDROID_APP_DEV = ""
+FIREBASE_IOS_APP_DEV = ""
+FIREBASE_TEST_GROUP_DEV = ""
+
+lane :get_branch do |options|
+  ENV['branch'] = git_branch
+end
+
+lane :certificates do |options|
+  type = options.fetch(:type, "development")
+
+  if type == "development"
+    match(
+      type: type,
+      app_identifier: "com.leiteszeke.example",
+      api_key_path: "fastlane/Authkey.json",
+    )
+  end
+
+  if type == "appstore"
+    match(
+      type: type,
+      app_identifier: "com.leiteszeke.example",
+      api_key_path: "fastlane/Authkey.json",
+    )
+  end
+end
+
+platform :android do
+
+  lane :build do |options|
+    type = options.fetch(:type)
+    build_type = options.fetch(:build_type, "assemble")
+
+    properties = {
+      "org.gradle.workers.max" => 2
+    }
+
+    gradle(
+      task: "clean",
+      project_dir: "android/",
+      gradle_path: "./gradlew",
+      properties: properties
+    )
+
+    if build_type == "assemble"
+      gradle(
+        task: "assemble",
+        build_type: type,
+        project_dir: "android/",
+        gradle_path: "./gradlew",
+        properties: properties
+      )
+    end
+
+    if build_type == "bundle"
+      gradle(
+        task: "bundle",
+        build_type: type,
+        project_dir: "android/",
+        gradle_path: "./gradlew",
+        properties: properties
+      )
+    end
+  end
+
+  lane :moveFile do |options|
+    build_name = options.fetch(:build_name)
+    file_name = options.fetch(:file_name)
+    build_format = options.fetch(:build_format, "apk")
+
+    if build_format == "apk"
+      output_path = lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]
+    end
+
+    if build_format == "aab"
+      output_path = lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH]
+    end
+
+    directory_path = output_path.sub /#{build_name}\.#{build_format}/, ""
+    new_app_name = "#{file_name}.#{build_format}"
+    final_path = directory_path + new_app_name
+
+    sh("mv", output_path, final_path)
+
+    ENV['output_apk_path'] = final_path
+  end
+
+  lane :dev do |options|
+    build(type: "Debug")
+
+    moveFile(
+      build_name: "app-debug",
+      file_name: "example_dev",
+      build_format: "apk",
+    )
+  end
+
+  lane :ci_dev do |options|
+    dev(options)
+
+    firebase_app_distribution(
+      app: FIREBASE_ANDROID_APP_DEV,
+      groups: FIREBASE_TEST_GROUP_DEV,
+      firebase_cli_token: ENV['FIREBASE_TOKEN'],
+      release_notes: ENV["CHANGELOG"] || ENV['branch'] || "No changelog provided",
+      ipa_path: ENV['output_ipa_path']
+    )
+  end
+
+  lane :prod do |options|
+    build(
+      type: "Release",
+      build_type: "bundle"
+    )
+
+    moveFile(
+      build_name: "app-release",
+      file_name: "example_prod",
+      build_format: "aab",
+    )
+  end
+
+  lane :ci_prod do |options|
+    prod(options)
+
+    upload_to_play_store(
+      track: 'internal',
+      aab: 'android/app/build/outputs/bundle/release/example_prod.aab'
+    )
+  end
+end
+
+platform :ios do
+  before_all do |lane, options|
+    cocoapods(
+      clean_install: true,
+      podfile: "./ios/Podfile"
+    )
+  end
+
+  # iOS Lanes
+  lane :build do |options|
+    scheme = options.fetch(:scheme)
+    export_method = options.fetch(:export_method)
+    app_identifier = options.fetch(:app_identifier)
+    profile = options.fetch(:profile)
+    token = options.fetch(:token, false)
+
+    configuration = options.fetch(:configuration, "Release")
+    output_name = options.fetch(:output_name, "example.ipa")
+    sign_type = options.fetch(:sign_type, "app-store")
+
+    match(
+      type: sign_type,
+      app_identifier: app_identifier,
+      # api_key_path: "fastlane/Authkey.json",
+      readonly: is_ci
+    )
+
+    settings_to_override = {
+      :BUNDLE_IDENTIFIER => app_identifier,
+      :PROVISIONING_PROFILE_SPECIFIER => profile,
+    }
+
+    export_options = {
+      provisioningProfiles: {
+        "#{app_identifier}" => "#{profile}"
+      }
+    }
+
+    build_app(
+      scheme: scheme,
+      configuration: configuration,
+      xcargs: settings_to_override,
+      workspace: "ios/ExampleApp.xcworkspace",
+      export_method: export_method,
+      export_options: export_options,
+      output_name: output_name
+    )
+  end
+
+  lane :dev do |options|
+    build(
+      scheme: "ExampleApp",
+      sign_type: "development",
+      configuration: "Release",
+      export_method: "development",
+      app_identifier: "com.leiteszeke.example",
+      profile: "match Development com.leiteszeke.example",
+      output_name: "example_dev.ipa",
+      token: options.fetch(:token, false)
+    )
+  end
+
+  lane :ci_dev do |options|
+    dev(options)
+
+    firebase_app_distribution(
+      app: FIREBASE_IOS_APP_DEV,
+      # groups: FIREBASE_TEST_GROUP_DEV,
+      firebase_cli_token: ENV['FIREBASE_TOKEN'],
+      release_notes: ENV["CHANGELOG"] || ENV['branch'] || "No changelog provided",
+      ipa_path: ENV['output_ipa_path']
+    )
+  end
+
+  lane :prod do |options|
+    build(
+      scheme: "example",
+      sign_type: "appstore",
+      configuration: "Release",
+      export_method: "app-store",
+      app_identifier: "com.leiteszeke.example",
+      profile: "match AppStore com.leiteszeke.example",
+      output_name: "example.ipa",
+      token: options.fetch(:token, false)
+    )
+  end
+
+  lane :ci_prod do |options|
+    release(options)
+
+    upload_to_testflight(
+      changelog: ENV["CHANGELOG"] || ENV['branch'] || "No changelog provided",
+      api_key_path: "fastlane/Authkey.json"
+    )
+  end
+end

@@ -3,6 +3,11 @@ FIREBASE_ANDROID_APP_DEV = ""
 FIREBASE_IOS_APP_DEV = ""
 FIREBASE_TEST_GROUP_DEV = ""
 
+# QA
+FIREBASE_ANDROID_APP_QA = ""
+FIREBASE_IOS_APP_QA = ""
+FIREBASE_TEST_GROUP_QA = ""
+
 lane :get_branch do |options|
   ENV['branch'] = git_branch
 end
@@ -109,6 +114,28 @@ platform :android do
     )
   end
 
+  lane :qa do |options|
+    build(type: "QA")
+
+    moveFile(
+      build_name: "app-qa",
+      file_name: "example_qa",
+      build_format: "apk",
+    )
+  end
+
+  lane :ci_qa do |options|
+    qa(options)
+
+    firebase_app_distribution(
+      app: FIREBASE_ANDROID_APP_QA,
+      # groups: FIREBASE_TEST_GROUP_QA,
+      firebase_cli_token: ENV['FIREBASE_TOKEN'],
+      release_notes: ENV["CHANGELOG"] || ENV['branch'] || "No changelog provided",
+      apk_path: ENV['output_apk_path']
+    )
+  end
+
   lane :prod do |options|
     build(
       type: "Release",
@@ -200,6 +227,31 @@ platform :ios do
     firebase_app_distribution(
       app: FIREBASE_IOS_APP_DEV,
       # groups: FIREBASE_TEST_GROUP_DEV,
+      firebase_cli_token: ENV['FIREBASE_TOKEN'],
+      release_notes: ENV["CHANGELOG"] || ENV['branch'] || "No changelog provided",
+      ipa_path: ENV['output_ipa_path']
+    )
+  end
+
+  lane :qa do |options|
+    build(
+      scheme: "example_qa",
+      sign_type: "development",
+      configuration: "QA",
+      export_method: "development",
+      app_identifier: "com.leiteszeke.example",
+      profile: "match Development com.leiteszeke.example",
+      output_name: "example_qa.ipa",
+      token: options.fetch(:token, false)
+    )
+  end
+
+  lane :ci_qa do |options|
+    qa(options)
+
+    firebase_app_distribution(
+      app: FIREBASE_IOS_APP_QA,
+      # groups: FIREBASE_TEST_GROUP_QA,
       firebase_cli_token: ENV['FIREBASE_TOKEN'],
       release_notes: ENV["CHANGELOG"] || ENV['branch'] || "No changelog provided",
       ipa_path: ENV['output_ipa_path']

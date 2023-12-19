@@ -96,7 +96,12 @@ const config: ExpoConfig = {
     },
     sentryDsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
   },
-  plugins: ['sentry-expo', '@config-plugins/detox'],
+  plugins: [
+    'sentry-expo',
+    '@config-plugins/detox',
+    'expo-localization',
+    './plugins/withAndroidNamespace',
+  ],
   ...restOpts,
 }
 

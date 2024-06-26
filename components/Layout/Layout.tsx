@@ -1,5 +1,4 @@
 import { FontAwesome } from '@expo/vector-icons'
-import { useNavigation } from '@react-navigation/native'
 import C, { classNames, apply } from 'consistencss'
 
 import React from 'react'
@@ -16,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAndroidBack } from '#hooks/useAndroidBack'
 
 import { LayoutProps } from './Layout.types'
+import { router } from 'expo-router'
 
 const Layout = ({
   avoiKeyboard = false,
@@ -26,7 +26,6 @@ const Layout = ({
   style,
 }: LayoutProps) => {
   const insets = useSafeAreaInsets()
-  const { goBack } = useNavigation()
 
   const RightContent = headerProps?.rightContent ? (
     headerProps.rightContent
@@ -38,7 +37,7 @@ const Layout = ({
     />
   )
 
-  useAndroidBack(goBack)
+  useAndroidBack(router.back)
 
   const Container = bg ? ImageBackground : View
 
@@ -52,7 +51,7 @@ const Layout = ({
           {headerProps.withBack && (
             <TouchableOpacity
               activeOpacity={0.8}
-              onPress={goBack}
+              onPress={router.back}
               style={apply(C.h10, C.itemsCenter, C.justifyCenter, C.w10)}>
               <FontAwesome size={20} name="chevron-left" />
             </TouchableOpacity>

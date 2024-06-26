@@ -13,8 +13,16 @@ export const usersInitialState = {
   users: [],
 }
 
-export const userStore = (set: Set<UserState>, get: Get<UserState>): UserState => ({
-  ...usersInitialState,
+export const userStore = (
+  set: Set<UserState>,
+  get: Get<UserState>,
+  reset: globalThis.Set<() => void>,
+): UserState => {
+  reset.add(() => set(usersInitialState))
 
-  setUser: (user: UserWithToken | null) => set((state) => ({ ...state, user })),
-})
+  return {
+    ...usersInitialState,
+
+    setUser: (user: UserWithToken | null) => set((state) => ({ ...state, user })),
+  }
+}

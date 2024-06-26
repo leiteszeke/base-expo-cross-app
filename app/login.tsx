@@ -1,4 +1,3 @@
-import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native'
 import C, { apply } from 'consistencss'
 
 import React, { useCallback, useState } from 'react'
@@ -6,10 +5,12 @@ import { ViewStyle, Text, View, TextInput, TouchableOpacity } from 'react-native
 
 import Layout from '#components/Layout'
 import { logEvent } from '#helpers/analytics'
-import { ScreensParamList } from '#types'
+import { Redirect, router, useFocusEffect, useLocalSearchParams } from 'expo-router'
+import { useAppStore } from '#store'
 
 const Login = () => {
-  const { params } = useRoute<RouteProp<ScreensParamList, 'Login'>>()
+  const params = useLocalSearchParams()
+  const { user, setUser } = useAppStore()
 
   const [username, setUsername] = useState<string>('')
   const [password, setPassword] = useState<string>('')
@@ -22,6 +23,10 @@ const Login = () => {
       }
     }, []),
   )
+
+  if (user) {
+    return <Redirect href="/" />
+  }
 
   return (
     <Layout
@@ -72,6 +77,18 @@ const Login = () => {
         onPress={() => {
           if (username.length > 0 && password.length > 0) {
             setValid(true)
+            setTimeout(() => {
+              setUser({
+                id: '1',
+                email: username,
+                name: 'Name',
+                lastname: 'Lastname',
+                image: 'https://picsum.photos/200/300',
+                accessToken: 'Token',
+              })
+
+              router.navigate('/')
+            }, 2000)
           } else {
             setValid(false)
           }

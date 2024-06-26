@@ -1,14 +1,8 @@
-import { NavigationProp, useNavigation } from '@react-navigation/native'
-
-import { RootStackParamList, ScreensParamList } from '#types'
-
+import { router } from 'expo-router'
 import { useDevice } from './useDevice'
-
-const RootStack = 'Root'
 
 export const useRedirect = () => {
   const { isWeb } = useDevice()
-  const { navigate } = useNavigation<NavigationProp<RootStackParamList>>()
 
   if (isWeb) {
     const urlSearchParams = new URLSearchParams(window.location.search)
@@ -17,8 +11,8 @@ export const useRedirect = () => {
     const { sc: screen, ...restParams } = params
 
     if (screen) {
-      navigate(RootStack, {
-        screen: screen as keyof ScreensParamList,
+      router.navigate({
+        pathname: screen,
         params: restParams as any,
       })
     }

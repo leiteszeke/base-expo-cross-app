@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { DeviceType } from 'expo-device'
 import { create } from 'zustand'
 import { createJSONStorage, devtools, persist } from 'zustand/middleware'
 import { createStore as createVanilla } from 'zustand/vanilla'
@@ -10,39 +9,22 @@ import Config from '#helpers/config'
 import { AppVersion } from '#types'
 
 import { State, Set, Get } from './store.types'
-import { usersInitialState, userStore } from './users'
-import { GenericState } from './generic'
+import { userStore } from './users'
+import { genericStore } from './generic'
 
 const Storage = Platform.OS !== 'web' ? AsyncStorage : localStorage
 
-export const genericInitialState = {
-  deviceType: DeviceType.DESKTOP,
+const sliceResetFns = new globalThis.Set<() => void>()
+
+export const resetStore = () => {
+  sliceResetFns.forEach((resetFn) => {
+    resetFn()
+  })
 }
-
-export const initialState = {
-  ...genericInitialState,
-  ...usersInitialState,
-}
-
-export const genericState = (set: Set<GenericState>, get: Get<GenericState>): GenericState => ({
-  ...genericInitialState,
-
-  setDeviceType: (type: DeviceType) => set((state) => ({ ...state, deviceType: type })),
-
-  isPhone: () => get().deviceType === DeviceType.PHONE,
-  isTablet: () => get().deviceType === DeviceType.TABLET,
-  isDesktop: () => get().deviceType === DeviceType.DESKTOP,
-
-  resetStore: () =>
-    set((state) => ({
-      ...state,
-      ...initialState,
-    })),
-})
 
 const storeObject = (set: Set<State>, get: Get<State>): State => ({
-  ...genericState(set, get),
-  ...userStore(set, get),
+  ...genericStore(set, get, sliceResetFns),
+  ...userStore(set, get, sliceResetFns),
 })
 
 const storeConfig = {

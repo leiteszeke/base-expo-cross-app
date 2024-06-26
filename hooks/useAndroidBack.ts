@@ -1,24 +1,22 @@
-import { useFocusEffect } from "@react-navigation/native";
-
-import { useCallback } from "react";
-import { BackHandler } from "react-native";
+import { useFocusEffect } from 'expo-router'
+import { useCallback } from 'react'
+import { BackHandler } from 'react-native'
 
 export const useAndroidBack = (onBack?: VoidFunction) => {
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
         if (onBack) {
-          onBack();
-          return true;
+          onBack()
+          return true
         }
 
-        return false;
-      };
+        return false
+      }
 
-      BackHandler.addEventListener("hardwareBackPress", onBackPress);
+      BackHandler.addEventListener('hardwareBackPress', onBackPress)
 
-      return () =>
-        BackHandler.removeEventListener("hardwareBackPress", onBackPress);
-    }, [onBack])
-  );
-};
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress)
+    }, [onBack]),
+  )
+}

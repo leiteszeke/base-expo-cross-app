@@ -35,6 +35,9 @@ type EnvConfig = {
   firebaseConfig: FirebaseConfig
 
   sentryDsn: string
+
+  domainAppUrl: string
+  showMaintenance: boolean
 }
 
 const Config: EnvConfig = {
@@ -49,6 +52,9 @@ const Config: EnvConfig = {
   firebaseConfig: envValues.firebaseConfig,
 
   sentryDsn: envValues.sentryDsn,
+
+  domainAppUrl: envValues.domainAppUrl,
+  showMaintenance: envValues.showMaintenance,
 }
 
 export default Config

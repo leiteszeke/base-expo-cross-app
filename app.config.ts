@@ -74,6 +74,7 @@ const config: ExpoConfig = {
     versionCode: expoVersion.android,
   },
   web: {
+    bundler: 'metro',
     favicon: './assets/favicon.png',
     publicPath: './assets/images',
   },
@@ -97,6 +98,7 @@ const config: ExpoConfig = {
     sentryDsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
   },
   plugins: [
+    'expo-router',
     'sentry-expo',
     '@config-plugins/detox',
     'expo-localization',

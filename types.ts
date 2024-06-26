@@ -1,12 +1,9 @@
 import ExpoMixpanelAnalytics from '@bothrs/expo-mixpanel-analytics'
-import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native'
 import { OverridedMixpanel } from 'mixpanel-browser'
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs'
 
 import { DeviceType } from 'expo-device'
 
 import packageJson from './package.json'
-import { NativeStackScreenProps } from '@react-navigation/native-stack'
 
 export type MixPanel = ExpoMixpanelAnalytics | OverridedMixpanel
 
@@ -21,54 +18,12 @@ export type LogEvent = {
   eventData: Generic
 }
 
-declare global {
-  namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList {}
-  }
-}
-
-export type RootStackParamList = {
-  Root: NavigatorScreenParams<ScreensParamList> | undefined
-  Policy: undefined
-}
-
-export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
-  RootStackParamList,
-  Screen
->
-
-export type ScreensParamList = {
-  NotFound: undefined
-  Login: {
-    referral?: string
-  }
-  Register: {
-    referral?: string
-  }
-  Logout: undefined
-  Home: undefined
-}
-
-export type RootTabParamList = ScreensParamList
-
-export type RootNativeStackParamList = ScreensParamList
-
-export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
-  BottomTabScreenProps<RootTabParamList, Screen>,
-  NativeStackScreenProps<RootStackParamList>
->
-
 export enum Env {
   Local = 'local',
   Dev = 'development',
   QA = 'qa',
   Production = 'production',
 }
-
-export type RootNativeStackScreenProps = CompositeScreenProps<
-  NativeStackScreenProps<RootNativeStackParamList>,
-  NativeStackScreenProps<RootStackParamList>
->
 
 export type Generic<T = unknown> = Record<string, T>
 

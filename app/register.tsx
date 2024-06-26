@@ -1,4 +1,3 @@
-import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native'
 import C, { apply } from 'consistencss'
 
 import React, { useCallback } from 'react'
@@ -6,10 +5,12 @@ import { ViewStyle, Text } from 'react-native'
 
 import Layout from '#components/Layout'
 import { logEvent } from '#helpers/analytics'
-import { ScreensParamList } from '#types'
+import { Redirect, useFocusEffect, useLocalSearchParams } from 'expo-router'
+import { useAppStore } from '#store'
 
 const Register = () => {
-  const { params } = useRoute<RouteProp<ScreensParamList, 'Register'>>()
+  const { user } = useAppStore()
+  const params = useLocalSearchParams()
 
   useFocusEffect(
     useCallback(() => {
@@ -18,6 +19,10 @@ const Register = () => {
       }
     }, []),
   )
+
+  if (user) {
+    return <Redirect href="/" />
+  }
 
   return (
     <Layout style={apply(C.bgPurple, C.justifyCenter) as ViewStyle}>

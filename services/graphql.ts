@@ -2,7 +2,7 @@ import { ApolloClient, ApolloLink, HttpLink, InMemoryCache } from '@apollo/clien
 import { setContext } from '@apollo/client/link/context'
 
 import Config from '#helpers/config'
-import { AppStore, initialState } from '#store'
+import { AppStore, resetStore } from '#store'
 import { AppVersion, UserWithToken } from '#types'
 import { Platform } from 'react-native'
 import { onError } from '@apollo/client/link/error'
@@ -43,7 +43,7 @@ const errorLink = onError((error) => {
     const currentError = error.networkError as NetworkError
 
     if (currentError.statusCode === 401 && currentError.result.message === 'not_authorized') {
-      AppStore.setState(() => initialState)
+      resetStore()
 
       window.location.href = window.location.origin + '/login'
     }

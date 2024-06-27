@@ -1,7 +1,7 @@
-appId: com.example.baseexpocrossapp
+appId: com.leiteszeke.example
 ---
 - launchApp:
-    appId: com.example.baseexpocrossapp
+    appId: com.leiteszeke.example
 # tap on username
 - tapOn:
     text: "Username"

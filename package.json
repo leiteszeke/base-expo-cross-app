@@ -38,10 +38,10 @@
     "e2e:build:ios": "detox build --configuration ios.release",
     "e2e:android": "detox test --configuration android.release --reuse",
     "e2e:ios": "detox test --configuration ios.release --reuse",
-    "e2e:web": "start-server-and-test web http-get://localhost:19006 cypress:run",
+    "e2e:web": "start-server-and-test web http-get://localhost:8081 cypress:run",
     "cypress:run": "cypress run",
     "cypress:open": "cypress open",
-    "maestro:test": "cd e2e/maestro; maestro test"
+    "maestro:test": "cd e2e/maestro; maestro test login.yaml"
   },
   "dependencies": {
     "@apollo/client": "^3.10.7",
